@@ -16,7 +16,8 @@ import { ADMIN_EMAIL } from "@/lib/constants";
 export const POST = async (request) => {
   try {
     const body = await request.json();
-    const { email, userType, name, personalInfo, isVerified } = body;
+    const { email, userType, name, personalInfo, isVerified, phone } = body;
+    console.log("[USER POST API REQUEST]", body);
 
     if (!email) {
       return NextResponse.json(
@@ -41,6 +42,7 @@ export const POST = async (request) => {
       userType: userType || USER_TYPES.PLAYER,
       name: name || "",
       isVerified: isVerified || true,
+      phone: phone || "",
     };
 
     if (personalInfo) {

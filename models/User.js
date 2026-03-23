@@ -21,6 +21,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    phone: {
+      type: String,
+      trim: true,
+      required: [true, "Phone number is required"],
+    },
     isVerified: {
       type: Boolean,
       default: false,
