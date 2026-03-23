@@ -41,7 +41,7 @@ export const POST = async (request) => {
       email,
       userType: userType || USER_TYPES.PLAYER,
       name: name || "",
-      isVerified: isVerified || true,
+      isVerified: isVerified === false ? false : true,
       phone: phone || "",
     };
 
