@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useToast } from "@/components/pwa/Toast";
 
 const API = "https://football-training-app-rsx3.vercel.app";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,6 +21,7 @@ interface Session {
 export default function SessionDetailPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const toast = useToast();
   const { id } = useParams<{ id: string }>();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,13 +54,14 @@ export default function SessionDetailPage() {
       const res = await fetch(`${API}/api/sessions/${id}`, {
         method: "DELETE",
       });
-      if (res.ok) router.back();
-      else {
+      if (res.ok) {
+        router.back();
+      } else {
         const d = await res.json();
-        alert(d.message || "Failed to delete");
+        toast.show(d.message || "Failed to delete", "error");
       }
     } catch {
-      alert("Network error");
+      toast.show("Network error", "error");
     } finally {
       setDeleting(false);
       setShowDel(false);

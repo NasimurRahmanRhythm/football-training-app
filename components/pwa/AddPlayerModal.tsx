@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/pwa/Toast";
 
 const API = "https://football-training-app-rsx3.vercel.app";
 const POSITIONS = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
@@ -31,6 +32,7 @@ export default function AddPlayerModal({
   isEditing = false,
   isVerified = true,
 }: Props) {
+  const toast = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -71,13 +73,11 @@ export default function AddPlayerModal({
 
   const handleSubmit = async () => {
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRe = /^(?:0|\+44)(?:\s*\d){9,10}$/;
+    const digits = phone.replace(/\D/g, "");
     if (!emailRe.test(email.trim()))
-      return alert("Please enter a valid email address.");
-    if (!phoneRe.test(phone.trim()))
-      return alert(
-        "Please enter a valid UK phone number (e.g. +44... or 0...).",
-      );
+      return toast.error("Please enter a valid email address.");
+    if (digits.length < 10)
+      return toast.error("Phone number must have at least 10 digits.");
 
     setLoading(true);
     try {
@@ -105,16 +105,16 @@ export default function AddPlayerModal({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed");
-      alert(
+      toast.success(
         isEditing
           ? "Player updated successfully."
           : isVerified
             ? "Player added successfully."
             : "Registration submitted!",
       );
-      onClose();
+      setTimeout(onClose, 1200);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "Error");
+      toast.error(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
       setLoading(false);
     }

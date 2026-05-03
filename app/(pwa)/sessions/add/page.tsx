@@ -7,6 +7,7 @@ import PlayerSelectionModal, {
 } from "@/components/pwa/PlayerSelectionModal";
 import EvaluationModal from "@/components/pwa/EvaluationModal";
 import DrillSelectionModal from "@/components/pwa/DrillSelectionModal";
+import { useToast } from "@/components/pwa/Toast";
 
 const API = "https://football-training-app-rsx3.vercel.app";
 const DRILLS = [
@@ -40,6 +41,7 @@ const fmtDate = (d: Date) => d.toISOString().split("T")[0];
 function AddSessionInner() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const toast = useToast();
   const params = useSearchParams();
   const editId = params.get("editId");
 
@@ -196,8 +198,9 @@ function AddSessionInner() {
     );
   };
   const finishDrill = () => {
-    if (!dName) return alert("Select a drill");
-    if (dPlayers.length === 0) return alert("Add players to the drill");
+    if (!dName) return toast.show("Select a drill type first.", "error");
+    if (dPlayers.length === 0)
+      return toast.show("Add at least one player to the drill.", "error");
     if (editDrillId)
       setDrills((prev) =>
         prev.map((d) =>
@@ -224,10 +227,13 @@ function AddSessionInner() {
 
   const handleSubmit = async () => {
     if (sType === "MATCH") {
-      if (!opponent.trim()) return alert("Enter opponent name");
-      if (!players.length) return alert("Add players");
+      if (!opponent.trim())
+        return toast.show("Please enter the opponent name.", "error");
+      if (!players.length)
+        return toast.show("Please add at least one player.", "error");
     } else {
-      if (!drills.length) return alert("Add at least one drill");
+      if (!drills.length)
+        return toast.show("Please add at least one drill.", "error");
     }
     setLoading(true);
     try {
@@ -273,11 +279,11 @@ function AddSessionInner() {
       });
       const d = await res.json();
       if (res.ok) {
-        alert(editId ? "Session updated!" : "Session added!");
-        router.back();
-      } else alert(d.message || "Failed");
+        toast.show(editId ? "Session updated!" : "Session added!", "success");
+        setTimeout(() => router.back(), 800);
+      } else toast.show(d.message || "Failed to save session.", "error");
     } catch {
-      alert("Network error");
+      toast.show("Network error. Please try again.", "error");
     } finally {
       setLoading(false);
     }

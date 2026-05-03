@@ -471,48 +471,96 @@ select {
 }
 
 /* ── Toast ── */
-.toast-container {
+.toast-portal {
   position: fixed;
   top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
+  right: 16px;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: calc(100% - 32px);
-  max-width: 440px;
+  gap: 12px;
   pointer-events: none;
+  width: 100%;
+  max-width: 320px;
 }
-.toast {
-  padding: 14px 18px;
-  border-radius: var(--r);
-  font-size: 14px;
-  font-weight: 600;
+
+.toast-card {
+  pointer-events: auto;
+  background: rgba(18, 18, 18, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  animation: toastIn 0.3s ease;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+  animation: toastSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-@keyframes toastIn {
+
+@keyframes toastSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateX(100px) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0) scale(1);
   }
 }
-.toast--success {
-  background: rgba(32, 224, 112, 0.15);
-  border: 1px solid rgba(32, 224, 112, 0.4);
+
+.toast-card__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast-card--success .toast-card__icon {
+  background: rgba(32, 224, 112, 0.1);
   color: var(--accent);
 }
-.toast--error {
-  background: rgba(255, 68, 68, 0.15);
-  border: 1px solid rgba(255, 68, 68, 0.4);
+
+.toast-card--error .toast-card__icon {
+  background: rgba(255, 68, 68, 0.1);
   color: var(--red);
+}
+
+.toast-card__message {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-card__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  width: 100%;
+  transform-origin: left;
+  animation: toastProgress 4s linear forwards;
+}
+
+.toast-card--error .toast-card__progress {
+  background: var(--red);
+}
+
+@keyframes toastProgress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 
 /* ── Loading / Empty ── */

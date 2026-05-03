@@ -6,6 +6,7 @@ import AddCoachModal from "@/components/pwa/AddCoachModal";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PlayerProfileView from "@/components/pwa/PlayerProfileView";
+import { useToast } from "@/components/pwa/Toast";
 
 const API = "https://football-training-app-rsx3.vercel.app";
 const SUPER_ADMIN = "rhythm4538@gmail.com";
@@ -13,6 +14,7 @@ const SUPER_ADMIN = "rhythm4538@gmail.com";
 export default function DashboardPage() {
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
+  const toast = useToast();
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showAddCoach, setShowAddCoach] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
@@ -61,11 +63,11 @@ export default function DashboardPage() {
       });
       const d = await res.json();
       if (!res.ok) throw new Error(d.message);
-      alert("Organization added!");
+      toast.show("Organization added!", "success");
       setOrgName("");
       setShowAddOrg(false);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "Failed");
+      toast.show(e instanceof Error ? e.message : "Failed", "error");
     } finally {
       setAddingOrg(false);
     }

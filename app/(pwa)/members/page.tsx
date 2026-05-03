@@ -4,6 +4,7 @@ import BottomNav from "@/components/pwa/BottomNav";
 import AddPlayerModal from "@/components/pwa/AddPlayerModal";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useToast } from "@/components/pwa/Toast";
 
 const API = "https://football-training-app-rsx3.vercel.app";
 type Tab = "PLAYER" | "COACH" | "PENDING_PLAYER";
@@ -19,6 +20,7 @@ interface Member {
 export default function MembersPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
+  const toast = useToast();
   const [tab, setTab] = useState<Tab>("PLAYER");
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,10 +79,10 @@ export default function MembersPage() {
         fetchMembers(tab);
       } else {
         const d = await res.json();
-        alert(d.message || "Failed");
+        toast.show(d.message || "Failed", "error");
       }
     } catch {
-      alert("Network error");
+      toast.show("Network error", "error");
     } finally {
       setAccepting(false);
     }

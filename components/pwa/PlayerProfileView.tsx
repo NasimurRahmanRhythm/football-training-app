@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/AuthContext";
 import AddPlayerModal from "@/components/pwa/AddPlayerModal";
 import { useEffect, useRef, useState } from "react";
+import { useToast } from "@/components/pwa/Toast";
 
 const API = "https://football-training-app-rsx3.vercel.app";
 
@@ -43,6 +44,7 @@ export default function PlayerProfileView({
   onBack,
 }: Props) {
   const { user: loggedIn } = useAuth();
+  const toast = useToast();
   const [player, setPlayer] = useState<AnyRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileImg, setProfileImg] = useState<string | null>(null);
@@ -85,9 +87,9 @@ export default function PlayerProfileView({
       });
       const d = await res.json();
       if (res.ok && d.success) setProfileImg(d.profileImage);
-      else alert(d.message || "Upload failed");
+      else toast.show(d.message || "Upload failed", "error");
     } catch {
-      alert("Upload failed");
+      toast.show("Upload failed", "error");
     } finally {
       setUploading(false);
     }
@@ -99,11 +101,11 @@ export default function PlayerProfileView({
       const res = await fetch(`${API}/api/user/${id}`, { method: "DELETE" });
       const d = await res.json();
       if (res.ok && d.success) {
-        alert("Deleted.");
+        toast.show("Deleted.", "success");
         if (onBack) onBack();
-      } else alert(d.message || "Failed");
+      } else toast.show(d.message || "Failed", "error");
     } catch {
-      alert("Network error");
+      toast.show("Network error", "error");
     } finally {
       setDeleting(false);
       setShowDel(false);

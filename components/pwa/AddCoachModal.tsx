@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
+import { useToast } from "@/components/pwa/Toast";
 
 const API = "https://football-training-app-rsx3.vercel.app";
 
 export default function AddCoachModal({ onClose }: { onClose: () => void }) {
+  const toast = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -11,11 +13,11 @@ export default function AddCoachModal({ onClose }: { onClose: () => void }) {
 
   const handleSubmit = async () => {
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRe = /^(?:0|\+44)(?:\s*\d){9,10}$/;
+    const digits = phone.replace(/\D/g, "");
     if (!emailRe.test(email.trim()))
-      return alert("Please enter a valid email address.");
-    if (!phoneRe.test(phone.trim()))
-      return alert("Please enter a valid UK phone number.");
+      return toast.error("Please enter a valid email address.");
+    if (digits.length < 10)
+      return toast.error("Phone number must have at least 10 digits.");
     setLoading(true);
     try {
       const res = await fetch(`${API}/api/user`, {
@@ -30,10 +32,10 @@ export default function AddCoachModal({ onClose }: { onClose: () => void }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed");
-      alert("Coach added successfully.");
-      onClose();
+      toast.success("Coach added successfully.");
+      setTimeout(onClose, 1200);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "Error");
+      toast.error(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -43,7 +45,7 @@ export default function AddCoachModal({ onClose }: { onClose: () => void }) {
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-sheet"
-        style={{ maxHeight: "60dvh" }}
+        style={{ maxHeight: "70dvh" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
@@ -79,7 +81,7 @@ export default function AddCoachModal({ onClose }: { onClose: () => void }) {
             <input
               className="form-input"
               type="tel"
-              placeholder="+44 7123 456789"
+              placeholder="e.g. 07123456789"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
