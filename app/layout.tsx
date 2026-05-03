@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "FT App",
+    title: "Rhythm",
   },
 };
 
@@ -41,7 +41,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-title" content="FT App" />
+        <meta name="apple-mobile-web-app-title" content="Rhythm" />
         <meta
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"

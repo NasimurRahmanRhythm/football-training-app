@@ -1,6 +1,6 @@
 {
   "name": "Football Training App",
-  "short_name": "FT App",
+  "short_name": "Rhythm",
   "description": "Manage football training sessions, players, and performance.",
   "start_url": "/login",
   "scope": "/",
