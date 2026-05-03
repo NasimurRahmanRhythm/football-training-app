@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   description:
     "Manage football training sessions, players, and performance evaluations.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
+    shortcut: "/icons/icon-192.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -31,9 +36,12 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
+        {/* PWA icons */}
+        <link rel="icon" type="image/png" href="/icons/icon-192.png" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="FT App" />
         <meta
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
