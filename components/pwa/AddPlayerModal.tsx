@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
+import { X, Check } from "lucide-react";
 
 const POSITIONS = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
 
@@ -136,7 +137,7 @@ export default function AddPlayerModal({
                 : "Register as Player"}
           </span>
           <button className="modal-close" onClick={onClose}>
-            ✕
+            <X size={20} />
           </button>
         </div>
         <div style={{ padding: "20px 20px 40px", overflowY: "auto" }}>
@@ -283,7 +284,7 @@ export default function AddPlayerModal({
                       setShowPosPicker(false);
                     }}
                   >
-                    {p} {position === p && <span>✓</span>}
+                    {p} {position === p && <Check size={16} style={{ marginLeft: "auto" }} />}
                   </div>
                 ))}
               </div>
@@ -322,7 +323,7 @@ export default function AddPlayerModal({
                         setShowOrgPicker(false);
                       }}
                     >
-                      {o} {organization === o && <span>✓</span>}
+                      {o} {organization === o && <Check size={16} style={{ marginLeft: "auto" }} />}
                     </div>
                   ))
                 )}

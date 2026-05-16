@@ -4,6 +4,16 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useToast } from "@/components/pwa/Toast";
+import { 
+  ChevronLeft, 
+  Pencil, 
+  Trash2, 
+  Calendar, 
+  Timer, 
+  Frown, 
+  Star,
+  Activity
+} from "lucide-react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyRecord = Record<string, any>;
@@ -138,7 +148,7 @@ export default function SessionDetailPage() {
         className="loading-screen"
         style={{ minHeight: "100dvh", flexDirection: "column", gap: 16 }}
       >
-        <span style={{ fontSize: 48 }}>😕</span>
+        <Frown size={48} color="var(--txt3)" />
         <p style={{ color: "var(--txt3)" }}>Session not found</p>
         <button className="btn btn--ghost" onClick={() => router.back()}>
           Go Back
@@ -151,7 +161,7 @@ export default function SessionDetailPage() {
       <div className="screen screen--no-nav">
         <div className="page-header">
           <button className="page-header__back" onClick={() => router.back()}>
-            ‹
+            <ChevronLeft size={24} />
           </button>
           <span className="page-header__title">Session Details</span>
           <div className="page-header__actions">
@@ -159,14 +169,14 @@ export default function SessionDetailPage() {
               className="btn btn--icon"
               onClick={() => router.push(`/sessions/add?editId=${id}`)}
             >
-              ✏️
+              <Pencil size={18} />
             </button>
             <button
               className="btn btn--icon"
               style={{ color: "var(--red)" }}
               onClick={() => setShowDel(true)}
             >
-              🗑️
+              <Trash2 size={18} />
             </button>
           </div>
         </div>
@@ -186,11 +196,11 @@ export default function SessionDetailPage() {
                 : "Training Session"}
             </h2>
             <div style={{ display: "flex", gap: 24 }}>
-              <span style={{ color: "var(--txt3)", fontSize: 14 }}>
-                📅 {fmtDate(session.date)}
+              <span style={{ color: "var(--txt3)", fontSize: 14, display: "flex", alignItems: "center", gap: 4 }}>
+                <Calendar size={14} /> {fmtDate(session.date)}
               </span>
-              <span style={{ color: "var(--txt3)", fontSize: 14 }}>
-                ⏱️ {session.duration} min
+              <span style={{ color: "var(--txt3)", fontSize: 14, display: "flex", alignItems: "center", gap: 4 }}>
+                <Timer size={14} /> {session.duration} min
               </span>
             </div>
           </div>
@@ -285,10 +295,9 @@ export default function SessionDetailPage() {
                   alignItems: "center",
                   justifyContent: "center",
                   margin: "0 auto 12px",
-                  fontSize: 28,
                 }}
               >
-                ⚠️
+                <Trash2 size={32} color="var(--red)" />
               </div>
               <h3 className="modal-title" style={{ textAlign: "center" }}>
                 Delete Session?

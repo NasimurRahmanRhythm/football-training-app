@@ -8,6 +8,18 @@ import { useEffect, useState } from "react";
 import PlayerProfileView from "@/components/pwa/PlayerProfileView";
 import { useToast } from "@/components/pwa/Toast";
 import { SUPER_ADMINS } from "@/lib/constants";
+import { 
+  LogOut, 
+  Users, 
+  UserPlus, 
+  Building2, 
+  List, 
+  PlusCircle, 
+  History, 
+  ChevronRight,
+  Trash2,
+  Loader2
+} from "lucide-react";
 
 export default function DashboardPage() {
   const { user, isLoading, logout } = useAuth();
@@ -141,10 +153,9 @@ export default function DashboardPage() {
                     alignItems: "center",
                     justifyContent: "center",
                     margin: "0 auto 12px",
-                    fontSize: 32,
                   }}
                 >
-                  🚪
+                  <LogOut size={32} color="var(--red)" />
                 </div>
                 <h3 className="modal-title" style={{ textAlign: "center" }}>
                   Logout
@@ -199,15 +210,20 @@ export default function DashboardPage() {
               color: "var(--red)",
               border: "1px solid var(--red-dim-b)",
               borderRadius: 8,
-              padding: "8px 14px",
+              padding: "8px 24px",
               fontSize: 13,
               fontWeight: 700,
               fontFamily: "var(--font)",
               cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              minWidth: "100px"
             }}
             onClick={() => setShowLogout(true)}
           >
-            Logout
+            <LogOut size={14} /> Logout
           </button>
         </div>
         <div className="welcome-section">
@@ -378,10 +394,9 @@ export default function DashboardPage() {
                   alignItems: "center",
                   justifyContent: "center",
                   margin: "0 auto 12px",
-                  fontSize: 32,
                 }}
               >
-                🚪
+                <LogOut size={32} color="var(--red)" />
               </div>
               <h3 className="modal-title" style={{ textAlign: "center" }}>
                 Logout

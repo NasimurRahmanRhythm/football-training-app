@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ChevronLeft, Check } from "lucide-react";
 const POSITIONS = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
 
 export default function RegisterPage() {
@@ -92,9 +93,9 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="screen screen--no-nav flex flex-col items-center justify-center text-center px-6">
-        <div className="w-20 h-20 bg-accent-dim rounded-full flex items-center justify-center text-accent text-4xl mb-6">
-          ✓
+      <div className="screen screen--no-nav flex flex-col items-center justify-center text-center" style={{ padding: "0 24px" }}>
+        <div className="w-20 h-20 bg-accent-dim rounded-full flex items-center justify-center text-accent mb-6">
+          <Check size={40} />
         </div>
         <h2 className="text-2xl font-black mb-2">Registration Successful!</h2>
         <p className="text-gray-400 mb-8">
@@ -111,7 +112,7 @@ export default function RegisterPage() {
       {/* Header */}
       <div className="page-header">
         <button onClick={() => router.back()} className="page-header__back">
-          ←
+          <ChevronLeft size={24} />
         </button>
         <h1 className="page-header__title">Register Player</h1>
         <div style={{ width: 44 }} />
@@ -119,7 +120,8 @@ export default function RegisterPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="flex-1 p-6 space-y-6 overflow-y-auto pb-12"
+        className="flex-1 overflow-y-auto"
+        style={{ padding: "24px 20px 40px" }}
       >
         <div className="space-y-4">
           <div className="form-group">
@@ -237,11 +239,12 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {error && <p className="form-error text-center">{error}</p>}
+        {error && <p className="form-error" style={{ textAlign: "center" }}>{error}</p>}
 
         <button
           type="submit"
-          className="btn btn--primary mt-4"
+          className="btn btn--primary"
+          style={{ marginTop: "24px" }}
           disabled={submitting}
         >
           {submitting ? (
@@ -272,7 +275,7 @@ export default function RegisterPage() {
                     setShowPosPicker(false);
                   }}
                 >
-                  {p} {formData.position === p && <span>✓</span>}
+                  {p} {formData.position === p && <Check size={16} style={{ marginLeft: "auto" }} />}
                 </div>
               ))}
             </div>
@@ -308,7 +311,7 @@ export default function RegisterPage() {
                       setShowOrgPicker(false);
                     }}
                   >
-                    {o} {formData.organization === o && <span>✓</span>}
+                    {o} {formData.organization === o && <Check size={16} style={{ marginLeft: "auto" }} />}
                   </div>
                 ))
               )}

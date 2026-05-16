@@ -3,6 +3,21 @@ import { useAuth } from "@/context/AuthContext";
 import AddPlayerModal from "@/components/pwa/AddPlayerModal";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
+import { 
+  Pencil, 
+  Trash2, 
+  ChevronLeft, 
+  Camera, 
+  LogOut, 
+  Star, 
+  Trophy, 
+  Dumbbell, 
+  Activity, 
+  Gift, 
+  Building2, 
+  User as UserIcon,
+  Timer
+} from "lucide-react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyRecord = Record<string, any>;
@@ -159,7 +174,7 @@ export default function PlayerProfileView({
               }}
               onClick={onLogout}
             >
-              🚪
+              <LogOut size={18} />
             </button>
           )}
           <button
@@ -170,7 +185,7 @@ export default function PlayerProfileView({
             }}
             onClick={() => setShowEdit(true)}
           >
-            ✏️
+            <Pencil size={18} />
           </button>
           {isCoach && (
             <button
@@ -182,7 +197,7 @@ export default function PlayerProfileView({
               }}
               onClick={() => setShowDel(true)}
             >
-              🗑️
+              <Trash2 size={18} />
             </button>
           )}
         </div>
@@ -191,7 +206,7 @@ export default function PlayerProfileView({
             className="page-header__back profile-hero__back"
             onClick={() => (onBack ? onBack() : history.back())}
           >
-            ‹
+            <ChevronLeft size={24} />
           </button>
         )}
       </div>
@@ -230,7 +245,7 @@ export default function PlayerProfileView({
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
             >
-              {uploading ? "⏳" : "📷"}
+              {uploading ? <Timer size={18} className="animate-spin" /> : <Camera size={18} />}
             </button>
             <input
               ref={fileRef}
@@ -248,8 +263,8 @@ export default function PlayerProfileView({
             </h1>
             <p style={{ color: "var(--txt3)", fontSize: 14 }}>{player.email}</p>
             {pi.organization && (
-              <p style={{ color: "var(--txt2)", fontSize: 13, marginTop: 2 }}>
-                🏢 {pi.organization}
+              <p style={{ color: "var(--txt2)", fontSize: 13, marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                <Building2 size={12} /> {pi.organization}
               </p>
             )}
           </div>
@@ -276,7 +291,7 @@ export default function PlayerProfileView({
       <div style={{ padding: "0 20px 20px" }}>
         <div className="stats-grid">
           <div className="stat-card">
-            <span className="stat-card__icon">⭐</span>
+            <span className="stat-card__icon"><Star size={16} fill="var(--accent)" strokeWidth={0} /></span>
             <span
               className="stat-card__value"
               style={{ color: "var(--accent)" }}
@@ -286,14 +301,14 @@ export default function PlayerProfileView({
             <span className="stat-card__label">Total Avg</span>
           </div>
           <div className="stat-card">
-            <span className="stat-card__icon">🏆</span>
+            <span className="stat-card__icon"><Trophy size={16} /></span>
             <span className="stat-card__value" style={{ color: "var(--gold)" }}>
               {(player.matchAvgRating || 0).toFixed(1)}
             </span>
             <span className="stat-card__label">Match Avg</span>
           </div>
           <div className="stat-card">
-            <span className="stat-card__icon">💪</span>
+            <span className="stat-card__icon"><Dumbbell size={16} /></span>
             <span className="stat-card__value" style={{ color: "var(--blue)" }}>
               {(player.trainingAvgRating || 0).toFixed(1)}
             </span>
@@ -302,14 +317,14 @@ export default function PlayerProfileView({
         </div>
         <div className="stats-grid stats-grid--2">
           <div className="stat-card">
-            <span className="stat-card__icon">⚽</span>
+            <span className="stat-card__icon"><Activity size={16} /></span>
             <span className="stat-card__value" style={{ color: "var(--red)" }}>
               {player.totalGoals || 0}
             </span>
             <span className="stat-card__label">Goals</span>
           </div>
           <div className="stat-card">
-            <span className="stat-card__icon">🎁</span>
+            <span className="stat-card__icon"><Gift size={16} /></span>
             <span className="stat-card__value" style={{ color: "#A855F7" }}>
               {player.totalAssists || 0}
             </span>
@@ -321,7 +336,7 @@ export default function PlayerProfileView({
       {/* Match sessions */}
       <div style={{ padding: "0 20px 20px" }}>
         <div className="section-header">
-          <span style={{ fontSize: 20 }}>🏆</span>
+          <Trophy size={20} color="var(--gold)" />
           <h3 className="section-title" style={{ color: "var(--gold)" }}>
             Match Sessions
           </h3>
@@ -374,7 +389,7 @@ export default function PlayerProfileView({
               <div
                 style={{ color: "var(--txt3)", fontSize: 13, marginBottom: 4 }}
               >
-                ⏱ {s.duration} min
+                <Timer size={12} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} /> {s.duration} min
                 {s.myPerformance &&
                 typeof s.myPerformance === "object" &&
                 "goals" in s.myPerformance
@@ -401,7 +416,7 @@ export default function PlayerProfileView({
       {/* Training sessions */}
       <div style={{ padding: "0 20px 80px" }}>
         <div className="section-header">
-          <span style={{ fontSize: 20 }}>💪</span>
+          <Dumbbell size={20} color="var(--blue)" />
           <h3 className="section-title" style={{ color: "var(--blue)" }}>
             Training Sessions
           </h3>
@@ -535,10 +550,9 @@ export default function PlayerProfileView({
                   alignItems: "center",
                   justifyContent: "center",
                   margin: "0 auto 12px",
-                  fontSize: 28,
                 }}
               >
-                ⚠️
+                <Trash2 size={32} color="var(--red)" />
               </div>
               <h3 className="modal-title" style={{ textAlign: "center" }}>
                 Delete Player?

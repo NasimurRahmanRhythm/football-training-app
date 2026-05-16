@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, Users, Calendar, PlusCircle } from "lucide-react";
 
 const ITEMS = [
-  { href: "/dashboard", icon: "🏠", label: "Home", key: "dashboard" },
-  { href: "/members", icon: "👥", label: "Members", key: "members" },
-  { href: "/sessions", icon: "📅", label: "Sessions", key: "sessions" },
-  { href: "/sessions/add", icon: "➕", label: "New", key: "add" },
+  { href: "/dashboard", icon: <Home size={20} />, label: "Home", key: "dashboard" },
+  { href: "/members", icon: <Users size={20} />, label: "Members", key: "members" },
+  { href: "/sessions", icon: <Calendar size={20} />, label: "Sessions", key: "sessions" },
+  { href: "/sessions/add", icon: <PlusCircle size={20} />, label: "New", key: "add" },
 ];
 
 export default function BottomNav({ active }: { active: string }) {

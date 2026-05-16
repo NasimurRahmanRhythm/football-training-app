@@ -1,4 +1,5 @@
 "use client";
+import { X } from "lucide-react";
 interface Props {
   drills: string[];
   onClose: () => void;
@@ -20,7 +21,7 @@ export default function DrillSelectionModal({
         <div className="modal-header">
           <span className="modal-title">Select Drill</span>
           <button className="modal-close" onClick={onClose}>
-            ✕
+            <X size={20} />
           </button>
         </div>
         <div style={{ overflowY: "auto", paddingBottom: 32 }}>

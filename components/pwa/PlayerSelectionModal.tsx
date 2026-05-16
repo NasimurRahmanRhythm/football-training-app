@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { X, Search, Check } from "lucide-react";
 
 export interface Player {
   _id: string;
@@ -75,12 +76,12 @@ export default function PlayerSelectionModal({
         <div className="modal-header">
           <span className="modal-title">Select Players</span>
           <button className="modal-close" onClick={onClose}>
-            ✕
+            <X size={20} />
           </button>
         </div>
         <div style={{ padding: "16px 20px 0" }}>
           <div className="search-bar" style={{ marginBottom: 0 }}>
-            <span className="search-bar__icon">🔍</span>
+            <Search size={16} className="search-bar__icon" style={{ color: "var(--txt3)" }} />
             <input
               className="search-bar__input"
               placeholder="Search players..."
@@ -128,11 +129,7 @@ export default function PlayerSelectionModal({
                   </div>
                   <div className={`checkbox ${sel ? "checkbox--active" : ""}`}>
                     {sel && (
-                      <span
-                        style={{ color: "#000", fontSize: 14, fontWeight: 800 }}
-                      >
-                        ✓
-                      </span>
+                      <Check size={14} color="#000" strokeWidth={3} />
                     )}
                   </div>
                 </div>

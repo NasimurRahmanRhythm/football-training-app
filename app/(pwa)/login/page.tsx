@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { Activity, ArrowRight, Loader2 } from "lucide-react";
 
 const OTP_LEN = 6;
 
@@ -112,11 +113,10 @@ export default function LoginPage() {
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto 20px",
-            fontSize: 44,
             boxShadow: "0 8px 32px rgba(32,224,112,.35)",
           }}
         >
-          ⚽
+          <Activity size={44} color="#fff" />
         </div>
         <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>
           Football Training
@@ -179,7 +179,9 @@ export default function LoginPage() {
                   Sending...
                 </>
               ) : (
-                "Send OTP →"
+                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  Send OTP <ArrowRight size={18} />
+                </span>
               )}
             </button>
             <button

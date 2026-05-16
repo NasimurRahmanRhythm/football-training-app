@@ -8,6 +8,19 @@ import PlayerSelectionModal, {
 import EvaluationModal from "@/components/pwa/EvaluationModal";
 import DrillSelectionModal from "@/components/pwa/DrillSelectionModal";
 import { useToast } from "@/components/pwa/Toast";
+import { 
+  ChevronLeft, 
+  Trophy, 
+  Dumbbell, 
+  Star, 
+  Activity, 
+  Target, 
+  Plus, 
+  Pencil, 
+  Trash2,
+  Calendar,
+  Timer
+} from "lucide-react";
 
 const DRILLS = [
   "Passing",
@@ -308,7 +321,7 @@ function AddSessionInner() {
       <div className="screen screen--no-nav" style={{ paddingBottom: 100 }}>
         <div className="page-header">
           <button className="page-header__back" onClick={() => router.back()}>
-            ‹
+            <ChevronLeft size={24} />
           </button>
           <span className="page-header__title">
             {editId ? "Edit Session" : "New Session"}
@@ -328,8 +341,9 @@ function AddSessionInner() {
                   setPlayers([]);
                   setDrills([]);
                 }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
               >
-                🏆 Match
+                <Trophy size={16} /> Match
               </button>
               <button
                 className={`tab ${sType === "TRAINING" ? "tab--active" : ""}`}
@@ -338,8 +352,9 @@ function AddSessionInner() {
                   setOpponent("");
                   setPlayers([]);
                 }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
               >
-                💪 Training
+                <Dumbbell size={16} /> Training
               </button>
             </div>
           )}
@@ -403,12 +418,15 @@ function AddSessionInner() {
                     padding: "6px 14px",
                     fontSize: 13,
                     fontWeight: 700,
-                    fontFamily: "var(--font)",
+                   fontFamily: "var(--font)",
                     cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4
                   }}
                   onClick={() => setShowPlayerModal(true)}
                 >
-                  + Add
+                  <Plus size={14} /> Add
                 </button>
               </div>
               {players.map((p) => (
@@ -432,16 +450,20 @@ function AddSessionInner() {
                         fontFamily: "var(--font)",
                         fontWeight: 700,
                         cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4
                       }}
                       onClick={() => setEvalPlayer(p)}
                     >
-                      {p.rating > 0 ? `⭐ ${p.rating}/5` : "Evaluate"}
+                      {p.rating > 0 ? <><Star size={12} fill="currentColor" /> {p.rating}/5</> : "Evaluate"}
                     </button>
                   </div>
                   {p.rating > 0 && (
-                    <div className="drill-card__meta" style={{ marginTop: 4 }}>
-                      ⚽ {p.goals} | 👟 {p.assists}
-                      {p.cleansheet ? " | 🧤 CS" : ""}
+                    <div className="drill-card__meta" style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Activity size={12} /> {p.goals}</span>
+                      <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Target size={12} /> {p.assists}</span>
+                      {p.cleansheet ? <span style={{ display: "flex", alignItems: "center", gap: 4 }}>• CS</span> : ""}
                     </div>
                   )}
                 </div>
@@ -453,8 +475,8 @@ function AddSessionInner() {
           {sType === "TRAINING" && (
             <>
               <div className="card" style={{ marginBottom: 20 }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>
-                  {editDrillId ? "✏️ Edit Drill" : "➕ Add Drill"}
+                <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                  {editDrillId ? <><Pencil size={16} /> Edit Drill</> : <><Plus size={16} /> Add Drill</>}
                 </h3>
                 <div className="form-group">
                   <label className="form-label">Drill Type</label>
@@ -512,7 +534,7 @@ function AddSessionInner() {
                     }}
                     onClick={() => setShowDPlayerModal(true)}
                   >
-                    + Add
+                  <Plus size={14} /> Add
                   </button>
                 </div>
                 {dPlayers.map((p) => (
@@ -544,10 +566,13 @@ function AddSessionInner() {
                         fontFamily: "var(--font)",
                         fontWeight: 700,
                         cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4
                       }}
                       onClick={() => setEvalDPlayer(p)}
                     >
-                      {p.rating > 0 ? `⭐ ${p.rating}` : "Rate"}
+                      {p.rating > 0 ? <><Star size={12} fill="currentColor" /> {p.rating}</> : "Rate"}
                     </button>
                   </div>
                 ))}
@@ -572,7 +597,7 @@ function AddSessionInner() {
                     onClick={finishDrill}
                     disabled={!drillReady}
                   >
-                    {editDrillId ? "Update Drill" : "+ Add Drill"}
+                    {editDrillId ? "Update Drill" : "Add Drill"}
                   </button>
                 </div>
               </div>
@@ -603,7 +628,7 @@ function AddSessionInner() {
                               setDPlayers(d.players);
                             }}
                           >
-                            ✏️
+                            <Pencil size={16} />
                           </button>
                           <button
                             className="drill-card__btn"
@@ -614,7 +639,7 @@ function AddSessionInner() {
                               )
                             }
                           >
-                            🗑️
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </div>

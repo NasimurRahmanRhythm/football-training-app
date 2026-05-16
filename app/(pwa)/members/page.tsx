@@ -5,6 +5,7 @@ import AddPlayerModal from "@/components/pwa/AddPlayerModal";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
+import { ChevronLeft, Search, X, Users } from "lucide-react";
 
 type Tab = "PLAYER" | "COACH" | "PENDING_PLAYER";
 interface Member {
@@ -92,7 +93,7 @@ export default function MembersPage() {
       <div className="screen">
         <div className="page-header">
           <button className="page-header__back" onClick={() => router.back()}>
-            ‹
+            <ChevronLeft size={24} />
           </button>
           <span className="page-header__title">All Members</span>
           <div style={{ width: 44 }} />
@@ -117,7 +118,7 @@ export default function MembersPage() {
             ))}
           </div>
           <div className="search-bar">
-            <span className="search-bar__icon">🔍</span>
+            <Search size={16} className="search-bar__icon" style={{ color: "var(--txt3)" }} />
             <input
               className="search-bar__input"
               placeholder="Search..."
@@ -129,7 +130,7 @@ export default function MembersPage() {
                 className="search-bar__clear"
                 onClick={() => setSearch("")}
               >
-                ✕
+                <X size={14} />
               </button>
             )}
           </div>
@@ -142,7 +143,7 @@ export default function MembersPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-state__icon">👥</div>
+              <div className="empty-state__icon"><Users size={48} /></div>
               <p className="empty-state__text">
                 {search ? `No results for "${search}"` : "No members found."}
               </p>
