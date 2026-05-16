@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
 
-const API = "https://football-training-app-rsx3.vercel.app";
 
 export default function AddCoachModal({ onClose }: { onClose: () => void }) {
   const toast = useToast();
@@ -20,7 +19,7 @@ export default function AddCoachModal({ onClose }: { onClose: () => void }) {
       return toast.error("Phone number must have at least 10 digits.");
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/user`, {
+      const res = await fetch(`/api/user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

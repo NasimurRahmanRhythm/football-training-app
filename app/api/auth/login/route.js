@@ -44,19 +44,13 @@ export async function POST(request) {
       );
     }
 
-    const isReviewer = email.toLowerCase().trim() === "reviewer@yourdomain.com";
-
-    const otp = isReviewer
-      ? "123456"
-      : Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     user.otp = { code: otp, expiresAt };
     await user.save();
 
-    if (!isReviewer) {
-      await sendOtpEmail(user.email, otp);
-    }
+    await sendOtpEmail(user.email, otp);
 
     return NextResponse.json(
       {

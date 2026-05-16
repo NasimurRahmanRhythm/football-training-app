@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
 
-const API = "https://football-training-app-rsx3.vercel.app";
 const POSITIONS = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
 
 interface PlayerData {
@@ -16,6 +15,7 @@ interface PlayerData {
     organization?: string;
     height?: number;
     weight?: number;
+    profileImage?: string;
   };
 }
 
@@ -47,7 +47,7 @@ export default function AddPlayerModal({
   const [showOrgPicker, setShowOrgPicker] = useState(false);
 
   useEffect(() => {
-    fetch(`${API}/api/admin/organization`)
+    fetch(`/api/admin/organization`)
       .then((r) => r.json())
       .then((d) => {
         if (d.success) setOrgList(d.organizations || []);
@@ -82,8 +82,8 @@ export default function AddPlayerModal({
     setLoading(true);
     try {
       const url = isEditing
-        ? `${API}/api/user/${playerData?._id}`
-        : `${API}/api/user`;
+        ? `/api/user/${playerData?._id}`
+        : `/api/user`;
       const method = isEditing ? "PUT" : "POST";
       const res = await fetch(url, {
         method,
@@ -100,6 +100,7 @@ export default function AddPlayerModal({
             organization,
             height,
             weight,
+            profileImage: playerData?.personalInfo?.profileImage,
           },
         }),
       });

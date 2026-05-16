@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 
-const API = "https://football-training-app-rsx3.vercel.app";
 export interface Player {
   _id: string;
   name: string;
@@ -38,7 +37,7 @@ export default function PlayerSelectionModal({
   const fetchPlayers = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/user?userType=PLAYER`);
+      const res = await fetch(`/api/user?userType=PLAYER`);
       const data = await res.json();
       if (res.ok && data.success) setPlayers(data.users || []);
     } catch {

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useToast } from "@/components/pwa/Toast";
 
-const API = "https://football-training-app-rsx3.vercel.app";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyRecord = Record<string, any>;
 interface Session {
@@ -38,7 +37,7 @@ export default function SessionDetailPage() {
   const fetchSession = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/sessions/${id}`);
+      const res = await fetch(`/api/sessions/${id}`);
       const data = await res.json();
       if (res.ok) setSession(data);
     } catch {
@@ -51,7 +50,7 @@ export default function SessionDetailPage() {
   const doDelete = async () => {
     setDeleting(true);
     try {
-      const res = await fetch(`${API}/api/sessions/${id}`, {
+      const res = await fetch(`/api/sessions/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {

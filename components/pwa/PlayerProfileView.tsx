@@ -4,8 +4,6 @@ import AddPlayerModal from "@/components/pwa/AddPlayerModal";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
 
-const API = "https://football-training-app-rsx3.vercel.app";
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyRecord = Record<string, any>;
 
@@ -63,7 +61,7 @@ export default function PlayerProfileView({
   const fetchPlayer = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/user/${id}`);
+      const res = await fetch(`/api/user/${id}`);
       const data = await res.json();
       if (res.ok && data.success) {
         setPlayer(data.user);
@@ -81,7 +79,7 @@ export default function PlayerProfileView({
     try {
       const fd = new FormData();
       fd.append("image", file);
-      const res = await fetch(`${API}/api/user/${id}/profile-image`, {
+      const res = await fetch(`/api/user/${id}/profile-image`, {
         method: "POST",
         body: fd,
       });
@@ -98,7 +96,7 @@ export default function PlayerProfileView({
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      const res = await fetch(`${API}/api/user/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/user/${id}`, { method: "DELETE" });
       const d = await res.json();
       if (res.ok && d.success) {
         toast.show("Deleted.", "success");

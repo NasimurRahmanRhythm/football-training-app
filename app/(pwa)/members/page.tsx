@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
 
-const API = "https://football-training-app-rsx3.vercel.app";
 type Tab = "PLAYER" | "COACH" | "PENDING_PLAYER";
 interface Member {
   _id: string;
@@ -35,7 +34,7 @@ export default function MembersPage() {
   const fetchMembers = async (t: Tab) => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/user?userType=${t}`);
+      const res = await fetch(`/api/user?userType=${t}`);
       const data = await res.json();
       setMembers(res.ok && data.success ? data.users || [] : []);
     } catch {
@@ -69,7 +68,7 @@ export default function MembersPage() {
     if (!acceptTarget) return;
     setAccepting(true);
     try {
-      const res = await fetch(`${API}/api/user/${acceptTarget._id}`, {
+      const res = await fetch(`/api/user/${acceptTarget._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isVerified: true }),

@@ -9,7 +9,6 @@ import EvaluationModal from "@/components/pwa/EvaluationModal";
 import DrillSelectionModal from "@/components/pwa/DrillSelectionModal";
 import { useToast } from "@/components/pwa/Toast";
 
-const API = "https://football-training-app-rsx3.vercel.app";
 const DRILLS = [
   "Passing",
   "Shooting",
@@ -76,7 +75,7 @@ function AddSessionInner() {
     (async () => {
       setFetching(true);
       try {
-        const res = await fetch(`${API}/api/sessions/${editId}`);
+        const res = await fetch(`/api/sessions/${editId}`);
         const d = await res.json();
         if (res.ok) {
           setSType(d.type);
@@ -269,9 +268,7 @@ function AddSessionInner() {
               }))
             : [],
       };
-      const url = editId
-        ? `${API}/api/sessions/${editId}`
-        : `${API}/api/sessions`;
+      const url = editId ? `/api/sessions/${editId}` : `/api/sessions`;
       const res = await fetch(url, {
         method: editId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },

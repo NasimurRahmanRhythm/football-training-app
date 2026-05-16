@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
-const API = "https://football-training-app-rsx3.vercel.app";
 type SFilter = "MATCH" | "TRAINING";
 interface Session {
   _id: string;
@@ -27,7 +26,7 @@ export default function SessionsPage() {
   const fetch_ = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/sessions?type=${filter}`);
+      const res = await fetch(`/api/sessions?type=${filter}`);
       const data = await res.json();
       setSessions(
         res.ok ? (Array.isArray(data) ? data : data.sessions || []) : [],

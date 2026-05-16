@@ -7,9 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PlayerProfileView from "@/components/pwa/PlayerProfileView";
 import { useToast } from "@/components/pwa/Toast";
-
-const API = "https://football-training-app-rsx3.vercel.app";
-const SUPER_ADMIN = "rhythm4538@gmail.com";
+import { SUPER_ADMINS } from "@/lib/constants";
 
 export default function DashboardPage() {
   const { user, isLoading, logout } = useAuth();
@@ -22,6 +20,10 @@ export default function DashboardPage() {
   const [orgName, setOrgName] = useState("");
   const [addingOrg, setAddingOrg] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showAllOrgs, setShowAllOrgs] = useState(false);
+  const [allOrgs, setAllOrgs] = useState<string[]>([]);
+  const [fetchingOrgs, setFetchingOrgs] = useState(false);
+  const [deletingOrg, setDeletingOrg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/login");
@@ -38,7 +40,7 @@ export default function DashboardPage() {
   const doLogout = async () => {
     setLoggingOut(true);
     try {
-      await fetch(`${API}/api/auth/logout`, {
+      await fetch(`/api/auth/logout`, {
         method: "POST",
         headers: { Authorization: `Bearer ${user.token}` },
       });
@@ -53,7 +55,7 @@ export default function DashboardPage() {
     if (!orgName.trim()) return;
     setAddingOrg(true);
     try {
-      const res = await fetch(`${API}/api/admin/organization`, {
+      const res = await fetch(`/api/admin/organization`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -70,6 +72,44 @@ export default function DashboardPage() {
       toast.show(e instanceof Error ? e.message : "Failed", "error");
     } finally {
       setAddingOrg(false);
+    }
+  };
+
+  const fetchAllOrgs = async () => {
+    setFetchingOrgs(true);
+    try {
+      const res = await fetch(`/api/admin/organization`);
+      const data = await res.json();
+      if (data.success) {
+        setAllOrgs(data.organizations || []);
+      }
+    } catch (e) {
+      toast.show("Failed to fetch organizations", "error");
+    } finally {
+      setFetchingOrgs(false);
+    }
+  };
+
+  const doDeleteOrg = async (name: string) => {
+    setDeletingOrg(name);
+    try {
+      const res = await fetch(
+        `/api/admin/organization?org=${encodeURIComponent(name)}`,
+        {
+          method: "DELETE",
+        },
+      );
+      const data = await res.json();
+      if (data.success) {
+        toast.show("Organization deleted!", "success");
+        setAllOrgs((prev) => prev.filter((o) => o !== name));
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (e: unknown) {
+      toast.show(e instanceof Error ? e.message : "Failed to delete", "error");
+    } finally {
+      setDeletingOrg(null);
     }
   };
 
@@ -151,7 +191,7 @@ export default function DashboardPage() {
       <div className="screen">
         <div className="page-header">
           <span style={{ fontSize: 18, fontWeight: 800 }}>
-            ⚽ Football Training
+            Football Training
           </span>
           <button
             style={{
@@ -180,7 +220,7 @@ export default function DashboardPage() {
             onClick={() => router.push("/members")}
           >
             <div className="action-card__content">
-              <div className="action-card__title">👥 View All Members</div>
+              <div className="action-card__title">View All Members</div>
               <div className="action-card__desc">
                 Browse all registered players and coaches
               </div>
@@ -192,7 +232,7 @@ export default function DashboardPage() {
             onClick={() => setShowAddPlayer(true)}
           >
             <div className="action-card__content">
-              <div className="action-card__title">➕ Add a Player</div>
+              <div className="action-card__title">Add a Player</div>
               <div className="action-card__desc">
                 Register a new player to your academy
               </div>
@@ -201,30 +241,54 @@ export default function DashboardPage() {
           </button>
           <button className="action-card" onClick={() => setShowAddCoach(true)}>
             <div className="action-card__content">
-              <div className="action-card__title">🏋️ Add a Coach</div>
+              <div className="action-card__title">Add a Coach</div>
               <div className="action-card__desc">
                 Register a new coach to your staff
               </div>
             </div>
             <span className="action-card__arrow">›</span>
           </button>
-          {user.email === SUPER_ADMIN && (
-            <button className="action-card" onClick={() => setShowAddOrg(true)}>
-              <div className="action-card__content">
-                <div className="action-card__title">🏢 Add an Organization</div>
-                <div className="action-card__desc">
-                  Register a new organization
+          {SUPER_ADMINS.includes(user.email) && (
+            <>
+              <button
+                className="action-card"
+                onClick={() => setShowAddOrg(true)}
+              >
+                <div className="action-card__content">
+                  <div className="action-card__title">
+                    Add an Organization
+                  </div>
+                  <div className="action-card__desc">
+                    Register a new organization
+                  </div>
                 </div>
-              </div>
-              <span className="action-card__arrow">›</span>
-            </button>
+                <span className="action-card__arrow">›</span>
+              </button>
+              <button
+                className="action-card"
+                onClick={() => {
+                  setShowAllOrgs(true);
+                  fetchAllOrgs();
+                }}
+              >
+                <div className="action-card__content">
+                  <div className="action-card__title">
+                    See All Organizations
+                  </div>
+                  <div className="action-card__desc">
+                    Manage and delete organizations
+                  </div>
+                </div>
+                <span className="action-card__arrow">›</span>
+              </button>
+            </>
           )}
           <button
             className="action-card"
             onClick={() => router.push("/sessions/add")}
           >
             <div className="action-card__content">
-              <div className="action-card__title">📋 Add a Session</div>
+              <div className="action-card__title">Add a Session</div>
               <div className="action-card__desc">
                 Record a new match or training
               </div>
@@ -237,7 +301,7 @@ export default function DashboardPage() {
             onClick={() => router.push("/sessions")}
           >
             <div className="action-card__content">
-              <div className="action-card__title">📅 View All Sessions</div>
+              <div className="action-card__title">View All Sessions</div>
               <div className="action-card__desc">
                 History of all recorded sessions
               </div>
@@ -351,6 +415,81 @@ export default function DashboardPage() {
                 {loggingOut ? "Logging out..." : "Logout"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {showAllOrgs && (
+        <div
+          className="modal-overlay modal-overlay--center"
+          onClick={() => setShowAllOrgs(false)}
+        >
+          <div
+            className="modal-center"
+            style={{
+              maxHeight: "80vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="modal-title" style={{ marginBottom: 20 }}>
+              All Organizations
+            </h3>
+            <div style={{ flex: 1, overflowY: "auto", marginBottom: 20 }}>
+              {fetchingOrgs ? (
+                <div style={{ textAlign: "center", padding: 20 }}>
+                  <div className="spinner spinner--sm" />
+                </div>
+              ) : allOrgs.length === 0 ? (
+                <p style={{ color: "var(--txt3)", textAlign: "center" }}>
+                  No organizations found.
+                </p>
+              ) : (
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
+                >
+                  {allOrgs.map((org) => (
+                    <div
+                      key={org}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "12px 16px",
+                        background: "var(--bg2)",
+                        borderRadius: 12,
+                        border: "1px solid var(--bd)",
+                      }}
+                    >
+                      <span style={{ fontWeight: 600 }}>{org}</span>
+                      <button
+                        style={{
+                          background: "var(--red-dim)",
+                          color: "var(--red)",
+                          border: "none",
+                          padding: "6px 12px",
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          opacity: deletingOrg === org ? 0.5 : 1,
+                        }}
+                        onClick={() => doDeleteOrg(org)}
+                        disabled={deletingOrg === org}
+                      >
+                        {deletingOrg === org ? "..." : "Delete"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              className="btn btn--ghost"
+              onClick={() => setShowAllOrgs(false)}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

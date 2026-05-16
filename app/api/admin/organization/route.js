@@ -67,3 +67,40 @@ export const GET = async () => {
     );
   }
 };
+
+export const DELETE = async (request) => {
+  try {
+    const { searchParams } = new URL(request.url);
+    const org = searchParams.get("org");
+
+    if (!org) {
+      return NextResponse.json(
+        { success: false, message: "Organization name is required." },
+        { status: 400 },
+      );
+    }
+
+    await connectDB();
+    const admin = await Admin.findOne();
+    if (!admin) {
+      return NextResponse.json(
+        { success: false, message: "Admin data not found." },
+        { status: 404 },
+      );
+    }
+
+    admin.organizations = admin.organizations.filter((o) => o !== org);
+    await admin.save();
+
+    return NextResponse.json(
+      { success: true, message: "Organization deleted successfully." },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("[ADMIN ORGANIZATION DELETE API ERROR]", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error." },
+      { status: 500 },
+    );
+  }
+};

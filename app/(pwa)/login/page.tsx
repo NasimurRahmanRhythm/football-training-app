@@ -3,7 +3,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const API = "https://football-training-app-rsx3.vercel.app";
 const OTP_LEN = 6;
 
 export default function LoginPage() {
@@ -42,7 +41,7 @@ export default function LoginPage() {
     setError("");
     setSubmitting(true);
     try {
-      const res = await fetch(`${API}/api/auth/login`, {
+      const res = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),
@@ -67,7 +66,7 @@ export default function LoginPage() {
     setError("");
     setSubmitting(true);
     try {
-      const res = await fetch(`${API}/api/auth/verify-otp`, {
+      const res = await fetch(`/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), otp }),
@@ -183,6 +182,25 @@ export default function LoginPage() {
                 "Send OTP →"
               )}
             </button>
+            <button
+              style={{
+                display: "block",
+                margin: "16px auto 0",
+                color: "var(--accent)",
+                fontSize: 15,
+                fontWeight: "700",
+                background: "rgba(32, 224, 112, 0.1)",
+                border: "1px solid rgba(32, 224, 112, 0.3)",
+                padding: "12px 24px",
+                borderRadius: "12px",
+                cursor: "pointer",
+                fontFamily: "var(--font)",
+                width: "100%",
+              }}
+              onClick={() => router.push("/register")}
+            >
+              Register a Player
+            </button>
           </>
         ) : (
           <>
@@ -292,6 +310,25 @@ export default function LoginPage() {
               ) : (
                 "Verify & Login"
               )}
+            </button>
+            <button
+              style={{
+                display: "block",
+                margin: "16px auto 0",
+                color: "var(--accent)",
+                fontSize: 15,
+                fontWeight: "700",
+                background: "rgba(32, 224, 112, 0.1)",
+                border: "1px solid rgba(32, 224, 112, 0.3)",
+                padding: "12px 24px",
+                borderRadius: "12px",
+                cursor: "pointer",
+                fontFamily: "var(--font)",
+                width: "100%",
+              }}
+              onClick={() => router.push("/register")}
+            >
+              Register a Player
             </button>
             <button
               style={{

@@ -9,7 +9,7 @@ import {
   sendPendingApprovalEmail,
   sendAdminNewPlayerEmail,
 } from "@/lib/mailer";
-import { ADMIN_EMAIL } from "@/lib/constants";
+import { SUPER_ADMINS } from "@/lib/constants";
 
 // Helper to verify if the requester is a COACH
 
@@ -65,13 +65,15 @@ export const POST = async (request) => {
           err,
         ),
       );
-      sendAdminNewPlayerEmail(ADMIN_EMAIL, newUser.name, newUser.email).catch(
-        (err) =>
-          console.error(
-            "[MAILER ERROR] Failed to send admin notification email",
-            err,
-          ),
-      );
+      SUPER_ADMINS.forEach((adminEmail) => {
+        sendAdminNewPlayerEmail(adminEmail, newUser.name, newUser.email).catch(
+          (err) =>
+            console.error(
+              `[MAILER ERROR] Failed to send admin notification email to ${adminEmail}`,
+              err,
+            ),
+        );
+      });
     }
 
     return NextResponse.json(
