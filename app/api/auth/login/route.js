@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { sendOtpEmail } from "@/lib/mailer";
+import { SUPER_ADMINS } from "@/lib/constants";
+import { USER_TYPES } from "@/lib/enums";
 
 /**
  * POST /api/auth/login
@@ -32,16 +34,31 @@ export async function POST(request) {
       );
     }
     await connectDB();
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    const normalizedEmail = email.toLowerCase().trim();
+    let user = await User.findOne({ email: normalizedEmail });
+    const isSuperAdmin = SUPER_ADMINS.some(
+      (adminEmail) => adminEmail.toLowerCase().trim() === normalizedEmail,
+    );
 
     if (!user) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "No account found with this email address.",
-        },
-        { status: 404 },
-      );
+      if (isSuperAdmin) {
+        // Automatically create the Super Admin user if they don't exist
+        user = await User.create({
+          email: normalizedEmail,
+          userType: USER_TYPES.COACH, // Defaulting to COACH which is the base type for admins
+          name: "Super Admin",
+          phone: "0000000000", // Placeholder since phone is required
+          isVerified: true,
+        });
+      } else {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "No account found with this email address.",
+          },
+          { status: 404 },
+        );
+      }
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
