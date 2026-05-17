@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
 import { X, Check } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { SUPER_ADMINS } from "@/lib/constants";
 
 const POSITIONS = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
 
@@ -10,6 +12,7 @@ interface PlayerData {
   name?: string;
   email?: string;
   phone?: string;
+  paymentStatus?: "PAID" | "UNPAID";
   personalInfo?: {
     dateOfBirth?: string;
     position?: string;
@@ -34,9 +37,13 @@ export default function AddPlayerModal({
   isVerified = true,
 }: Props) {
   const toast = useToast();
+  const { user } = useAuth();
+  const isAdmin = user && SUPER_ADMINS.includes(user.email);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState<"PAID" | "UNPAID">("UNPAID");
   const [dob, setDob] = useState("");
   const [position, setPosition] = useState("");
   const [organization, setOrganization] = useState("");
@@ -61,6 +68,9 @@ export default function AddPlayerModal({
       setName(playerData.name || "");
       setEmail(playerData.email || "");
       setPhone(playerData.phone || "");
+      if (playerData.paymentStatus) {
+        setPaymentStatus(playerData.paymentStatus);
+      }
       const pi = playerData.personalInfo;
       if (pi) {
         setDob(pi.dateOfBirth ? pi.dateOfBirth.split("T")[0] : "");
@@ -95,6 +105,7 @@ export default function AddPlayerModal({
           phone: phone.trim(),
           userType: "PLAYER",
           isVerified,
+          paymentStatus,
           personalInfo: {
             dateOfBirth: dob,
             position,
@@ -171,6 +182,70 @@ export default function AddPlayerModal({
               onChange={(e) => setPhone(e.target.value)}
             />
           </div>
+
+          {isAdmin && (
+            <div className="form-group">
+              <label className="form-label">Payment Status</label>
+              <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+                <label
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    padding: "14px 16px",
+                    background: paymentStatus === "PAID" ? "var(--accent-dim)" : "var(--bg4)",
+                    border: paymentStatus === "PAID" ? "1px solid var(--accent)" : "1px solid var(--bd2)",
+                    borderRadius: "var(--r)",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    color: paymentStatus === "PAID" ? "var(--accent)" : "var(--txt2)",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="paymentStatus"
+                    value="PAID"
+                    checked={paymentStatus === "PAID"}
+                    onChange={() => setPaymentStatus("PAID")}
+                    style={{ display: "none" }}
+                  />
+                  {paymentStatus === "PAID" && <Check size={16} />}
+                  Paid
+                </label>
+                <label
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    padding: "14px 16px",
+                    background: paymentStatus === "UNPAID" ? "var(--red-dim)" : "var(--bg4)",
+                    border: paymentStatus === "UNPAID" ? "1px solid var(--red)" : "1px solid var(--bd2)",
+                    borderRadius: "var(--r)",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    color: paymentStatus === "UNPAID" ? "var(--red)" : "var(--txt2)",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="paymentStatus"
+                    value="UNPAID"
+                    checked={paymentStatus === "UNPAID"}
+                    onChange={() => setPaymentStatus("UNPAID")}
+                    style={{ display: "none" }}
+                  />
+                  {paymentStatus === "UNPAID" && <X size={16} />}
+                  Unpaid
+                </label>
+              </div>
+            </div>
+          )}
 
           <p className="form-section-title">Personal Info</p>
 

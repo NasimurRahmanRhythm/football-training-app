@@ -16,7 +16,8 @@ import {
   Gift, 
   Building2, 
   User as UserIcon,
-  Timer
+  Timer,
+  Check
 } from "lucide-react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -258,8 +259,25 @@ export default function PlayerProfileView({
             />
           </div>
           <div style={{ flex: 1, paddingBottom: 6 }}>
-            <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 2 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>
               {player.name}
+              {player.paymentStatus === "PAID" && (
+                <span 
+                  style={{ 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    width: 20, 
+                    height: 20, 
+                    borderRadius: "50%", 
+                    background: "rgba(32, 224, 112, 0.15)", 
+                    color: "var(--accent)" 
+                  }}
+                  title="Paid"
+                >
+                  <Check size={12} strokeWidth={3} />
+                </span>
+              )}
             </h1>
             <p style={{ color: "var(--txt3)", fontSize: 14 }}>{player.email}</p>
             {pi.organization && (

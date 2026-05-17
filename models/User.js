@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { USER_TYPES } from "@/lib/enums";
+import { USER_TYPES, PAYMENT_STATUS } from "@/lib/enums";
 import PersonalInfoSchema from "./inner-schema/PersonalInfo";
 
 const UserSchema = new mongoose.Schema(
@@ -16,6 +16,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(USER_TYPES),
       default: USER_TYPES.COACH,
+    },
+    paymentStatus: {
+      type: String,
+      enum: Object.values(PAYMENT_STATUS),
+      default: PAYMENT_STATUS.UNPAID,
     },
     name: {
       type: String,

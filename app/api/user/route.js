@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
-import { USER_TYPES } from "@/lib/enums";
+import { USER_TYPES, PAYMENT_STATUS } from "@/lib/enums";
 import { getUsers } from "@/lib/repositories/UserRepository";
 import {
   sendInviteEmail,
@@ -16,7 +16,7 @@ import { SUPER_ADMINS } from "@/lib/constants";
 export const POST = async (request) => {
   try {
     const body = await request.json();
-    const { email, userType, name, personalInfo, isVerified, phone } = body;
+    const { email, userType, name, personalInfo, isVerified, phone, paymentStatus } = body;
     console.log("[USER POST API REQUEST]", body);
 
     if (!email) {
@@ -43,6 +43,7 @@ export const POST = async (request) => {
       name: name || "",
       isVerified: isVerified === false ? false : true,
       phone: phone || "",
+      paymentStatus: paymentStatus || PAYMENT_STATUS.UNPAID,
     };
 
     if (personalInfo) {

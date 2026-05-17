@@ -709,6 +709,16 @@ select {
   border: 1px solid rgba(0, 212, 255, 0.3);
   color: var(--blue);
 }
+.badge--paid {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-dim-b);
+  color: var(--accent);
+}
+.badge--unpaid {
+  background: var(--red-dim);
+  border: 1px solid var(--red-dim-b);
+  color: var(--red);
+}
 
 /* ── Stars ── */
 .star-row {
