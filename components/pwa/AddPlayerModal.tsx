@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
 import { X, Check } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { SUPER_ADMINS } from "@/lib/constants";
 
 const POSITIONS = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
 
@@ -38,7 +37,7 @@ export default function AddPlayerModal({
 }: Props) {
   const toast = useToast();
   const { user } = useAuth();
-  const isAdmin = user && SUPER_ADMINS.includes(user.email);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -60,8 +59,23 @@ export default function AddPlayerModal({
       .then((d) => {
         if (d.success) setOrgList(d.organizations || []);
       })
-      .catch(() => {});
-  }, []);
+      .catch(() => { });
+
+    // Fetch admin members from DB to determine if current user has admin privileges
+    if (user?.email) {
+      fetch(`/api/admin/members`)
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.success && d.members) {
+            const normalizedEmail = user.email.toLowerCase().trim();
+            setIsAdmin(
+              d.members.map((m: string) => m.toLowerCase().trim()).includes(normalizedEmail)
+            );
+          }
+        })
+        .catch(() => { });
+    }
+  }, [user?.email]);
 
   useEffect(() => {
     if (isEditing && playerData) {

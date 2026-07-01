@@ -18,7 +18,8 @@ import {
   History, 
   ChevronRight,
   Trash2,
-  Loader2
+  Loader2,
+  Shield
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -36,6 +37,28 @@ export default function DashboardPage() {
   const [allOrgs, setAllOrgs] = useState<string[]>([]);
   const [fetchingOrgs, setFetchingOrgs] = useState(false);
   const [deletingOrg, setDeletingOrg] = useState<string | null>(null);
+  const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminEmailError, setAdminEmailError] = useState("");
+  const [addingAdmin, setAddingAdmin] = useState(false);
+  const [confirmAddAdmin, setConfirmAddAdmin] = useState(false);
+  const [isAdminMember, setIsAdminMember] = useState(false);
+
+  // Fetch admin members from DB to know if current user has admin privileges
+  useEffect(() => {
+    if (!user?.email) return;
+    fetch(`/api/admin/members`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.members) {
+          const normalized = user.email.toLowerCase().trim();
+          setIsAdminMember(
+            d.members.map((m: string) => m.toLowerCase().trim()).includes(normalized)
+          );
+        }
+      })
+      .catch(() => {});
+  }, [user?.email]);
 
   useEffect(() => {
     if (!isLoading && !user) router.replace("/login");
@@ -84,6 +107,54 @@ export default function DashboardPage() {
       toast.show(e instanceof Error ? e.message : "Failed", "error");
     } finally {
       setAddingOrg(false);
+    }
+  };
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const validateAdminEmail = (val: string) => {
+    if (!val.trim()) {
+      setAdminEmailError("Email is required.");
+      return false;
+    }
+    if (!emailRegex.test(val.trim())) {
+      setAdminEmailError("Please enter a valid email address.");
+      return false;
+    }
+    setAdminEmailError("");
+    return true;
+  };
+
+  const doAddAdmin = async () => {
+    if (!validateAdminEmail(adminEmail)) return;
+    setConfirmAddAdmin(true);
+  };
+
+  const confirmAndAddAdmin = async () => {
+    setAddingAdmin(true);
+    setConfirmAddAdmin(false);
+    try {
+      const res = await fetch(`/api/admin/members`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          requesterEmail: user.email,
+          newMemberEmail: adminEmail.trim(),
+        }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.message);
+      toast.show(`${adminEmail.trim()} added as admin!`, "success");
+      setAdminEmail("");
+      setAdminEmailError("");
+      setShowAddAdmin(false);
+    } catch (e: unknown) {
+      toast.show(e instanceof Error ? e.message : "Failed to add admin", "error");
+    } finally {
+      setAddingAdmin(false);
     }
   };
 
@@ -264,7 +335,7 @@ export default function DashboardPage() {
             </div>
             <span className="action-card__arrow">›</span>
           </button>
-          {SUPER_ADMINS.includes(user.email) && (
+          {isAdminMember && (
             <>
               <button
                 className="action-card"
@@ -297,8 +368,29 @@ export default function DashboardPage() {
                 </div>
                 <span className="action-card__arrow">›</span>
               </button>
+              {SUPER_ADMINS.includes(user.email) && (
+                <button
+                  className="action-card"
+                  onClick={() => {
+                    setAdminEmail("");
+                    setAdminEmailError("");
+                    setShowAddAdmin(true);
+                  }}
+                >
+                  <div className="action-card__content">
+                    <div className="action-card__title" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      Add an Admin
+                    </div>
+                    <div className="action-card__desc">
+                      Grant admin access to another user
+                    </div>
+                  </div>
+                  <span className="action-card__arrow">›</span>
+                </button>
+              )}
             </>
           )}
+
           <button
             className="action-card"
             onClick={() => router.push("/sessions/add")}
@@ -433,6 +525,182 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+      {/* ── Add Admin Modal ── */}
+      {showAddAdmin && (
+        <div
+          className="modal-overlay modal-overlay--center"
+          onClick={() => {
+            if (!addingAdmin) {
+              setShowAddAdmin(false);
+              setAdminEmailError("");
+            }
+          }}
+        >
+          <div className="modal-center" onClick={(e) => e.stopPropagation()}>
+            <div style={{ textAlign: "center", marginBottom: 16 }}>
+              <div
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 32,
+                  background: "rgba(108, 99, 255, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 12px",
+                }}
+              >
+                <Shield size={32} color="#6c63ff" />
+              </div>
+              <h3 className="modal-title" style={{ textAlign: "center" }}>
+                Add an Admin
+              </h3>
+              <p
+                style={{
+                  color: "var(--txt3)",
+                  fontSize: 13,
+                  lineHeight: "18px",
+                  marginTop: 6,
+                }}
+              >
+                Enter the email address of the user you want to grant admin access.
+              </p>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input
+                id="add-admin-email-input"
+                className="form-input"
+                type="email"
+                placeholder="admin@example.com"
+                value={adminEmail}
+                onChange={(e) => {
+                  setAdminEmail(e.target.value);
+                  if (adminEmailError) validateAdminEmail(e.target.value);
+                }}
+                onBlur={(e) => validateAdminEmail(e.target.value)}
+                autoFocus
+                style={{
+                  borderColor: adminEmailError ? "var(--red, #e74c3c)" : undefined,
+                }}
+              />
+              {adminEmailError && (
+                <p
+                  style={{
+                    color: "var(--red, #e74c3c)",
+                    fontSize: 12,
+                    marginTop: 4,
+                  }}
+                >
+                  {adminEmailError}
+                </p>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn--ghost"
+                style={{ flex: 1 }}
+                onClick={() => {
+                  setShowAddAdmin(false);
+                  setAdminEmailError("");
+                }}
+                disabled={addingAdmin}
+              >
+                Cancel
+              </button>
+              <button
+                id="add-admin-submit-btn"
+                className="btn btn--primary"
+                style={{
+                  flex: 1,
+                  opacity: adminEmail.trim() && !addingAdmin ? 1 : 0.5,
+                  background: "linear-gradient(135deg, #6c63ff, #8b5cf6)",
+                  border: "none",
+                }}
+                onClick={doAddAdmin}
+                disabled={!adminEmail.trim() || addingAdmin}
+              >
+                {addingAdmin ? "Adding..." : "Add"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Confirm Add Admin popup ── */}
+      {confirmAddAdmin && (
+        <div
+          className="modal-overlay modal-overlay--center"
+          style={{ zIndex: 9999 }}
+          onClick={() => setConfirmAddAdmin(false)}
+        >
+          <div
+            className="modal-center"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: 360 }}
+          >
+            <div style={{ textAlign: "center", marginBottom: 16 }}>
+              <div
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 28,
+                  background: "rgba(108, 99, 255, 0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 12px",
+                }}
+              >
+                <Shield size={26} color="#6c63ff" />
+              </div>
+              <h3
+                className="modal-title"
+                style={{ textAlign: "center", fontSize: 17 }}
+              >
+                Confirm Add Admin
+              </h3>
+            </div>
+            <p
+              style={{
+                color: "var(--txt3)",
+                textAlign: "center",
+                fontSize: 14,
+                lineHeight: "22px",
+                marginBottom: 20,
+              }}
+            >
+              Are you sure you want to grant admin access to{" "}
+              <strong style={{ color: "var(--txt1)", wordBreak: "break-all" }}>
+                {adminEmail.trim()}
+              </strong>
+              ? They will be able to log in and manage the platform.
+            </p>
+            <div className="modal-footer">
+              <button
+                className="btn btn--ghost"
+                style={{ flex: 1 }}
+                onClick={() => setConfirmAddAdmin(false)}
+              >
+                Cancel
+              </button>
+              <button
+                id="confirm-add-admin-btn"
+                className="btn btn--primary"
+                style={{
+                  flex: 1,
+                  background: "linear-gradient(135deg, #6c63ff, #8b5cf6)",
+                  border: "none",
+                }}
+                onClick={confirmAndAddAdmin}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showAllOrgs && (
         <div
           className="modal-overlay modal-overlay--center"

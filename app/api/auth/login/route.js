@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
+import Admin from "@/models/Admin";
 import { sendOtpEmail } from "@/lib/mailer";
 import { SUPER_ADMINS } from "@/lib/constants";
 import { USER_TYPES } from "@/lib/enums";
@@ -13,6 +14,9 @@ import { USER_TYPES } from "@/lib/enums";
  * - Checks if the email exists in the DB.
  * - If yes, generates a 6-digit OTP, stores it (hashed) with a 10-min expiry, and sends it via email.
  * - If no, returns a 404 error.
+ *
+ * Admin access is determined by the `members` array on the Admin DB document.
+ * Members are managed manually via the DB or via the "Add an Admin" feature (super admin only).
  */
 export async function POST(request) {
   try {
@@ -33,20 +37,31 @@ export async function POST(request) {
         { status: 400 },
       );
     }
+
     await connectDB();
+
     const normalizedEmail = email.toLowerCase().trim();
-    let user = await User.findOne({ email: normalizedEmail });
+
+    // Check if email is an admin member from the DB
+    const adminDoc = await Admin.findOne();
+    const isAdminMember = adminDoc
+      ? adminDoc.members.map((m) => m.toLowerCase().trim()).includes(normalizedEmail)
+      : false;
+
+    // Also allow SUPER_ADMINS from constants as a safety fallback
     const isSuperAdmin = SUPER_ADMINS.some(
       (adminEmail) => adminEmail.toLowerCase().trim() === normalizedEmail,
     );
 
+    let user = await User.findOne({ email: normalizedEmail });
+
     if (!user) {
-      if (isSuperAdmin) {
-        // Automatically create the Super Admin user if they don't exist
+      if (isAdminMember || isSuperAdmin) {
+        // Auto-create user account for admin members on first login
         user = await User.create({
           email: normalizedEmail,
-          userType: USER_TYPES.COACH, // Defaulting to COACH which is the base type for admins
-          name: "Super Admin",
+          userType: USER_TYPES.COACH, // COACH is the base type for admins
+          name: "Admin",
           phone: "0000000000", // Placeholder since phone is required
           isVerified: true,
         });
@@ -66,7 +81,6 @@ export async function POST(request) {
 
     user.otp = { code: otp, expiresAt };
     await user.save();
-
     await sendOtpEmail(user.email, otp);
 
     return NextResponse.json(

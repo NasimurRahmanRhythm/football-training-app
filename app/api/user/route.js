@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
+import Admin from "@/models/Admin";
 import { USER_TYPES, PAYMENT_STATUS } from "@/lib/enums";
 import { getUsers } from "@/lib/repositories/UserRepository";
 import {
@@ -9,7 +10,6 @@ import {
   sendPendingApprovalEmail,
   sendAdminNewPlayerEmail,
 } from "@/lib/mailer";
-import { SUPER_ADMINS } from "@/lib/constants";
 
 // Helper to verify if the requester is a COACH
 
@@ -59,14 +59,19 @@ export const POST = async (request) => {
         console.error("[MAILER ERROR] Failed to send invite email", err),
       );
     } else {
-      // Unverified (pending) user: notify player & admin
+      // Unverified (pending) user: notify player & all admin members from DB
       sendPendingApprovalEmail(newUser.email, newUser.name).catch((err) =>
         console.error(
           "[MAILER ERROR] Failed to send pending approval email",
           err,
         ),
       );
-      SUPER_ADMINS.forEach((adminEmail) => {
+
+      // Fetch admin members from DB and notify all of them
+      const adminDoc = await Admin.findOne();
+      const adminEmails = adminDoc ? adminDoc.members : [];
+
+      adminEmails.forEach((adminEmail) => {
         sendAdminNewPlayerEmail(adminEmail, newUser.name, newUser.email).catch(
           (err) =>
             console.error(
