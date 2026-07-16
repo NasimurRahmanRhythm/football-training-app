@@ -6,7 +6,6 @@ export const POST = async (request) => {
   try {
     const body = await request.json();
     const { organization } = body;
-    console.log(body);
 
     if (!organization) {
       return NextResponse.json(
@@ -57,7 +56,7 @@ export const GET = async () => {
     await connectDB();
     const admin = await Admin.findOne();
     const organizations = admin ? admin.organizations : [];
-    
+
     return NextResponse.json({ success: true, organizations }, { status: 200 });
   } catch (error) {
     console.error("[ADMIN ORGANIZATION GET API ERROR]", error);

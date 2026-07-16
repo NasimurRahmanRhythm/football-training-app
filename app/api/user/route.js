@@ -17,7 +17,6 @@ export const POST = async (request) => {
   try {
     const body = await request.json();
     const { email, userType, name, personalInfo, isVerified, phone, paymentStatus } = body;
-    console.log("[USER POST API REQUEST]", body);
 
     if (!email) {
       return NextResponse.json(
@@ -103,7 +102,6 @@ export const GET = async (request) => {
     await connectDB();
 
     const users = await getUsers(userType);
-    console.log("[USER GET API RESPONSE]", users);
 
     return NextResponse.json({ success: true, users }, { status: 200 });
   } catch (error) {

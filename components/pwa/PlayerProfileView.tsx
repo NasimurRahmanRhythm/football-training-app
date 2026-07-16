@@ -1,6 +1,7 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import AddPlayerModal from "@/components/pwa/AddPlayerModal";
+import ExportCsvModal from "@/components/pwa/ExportCsvModal";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/pwa/Toast";
 import { 
@@ -17,7 +18,8 @@ import {
   Building2, 
   User as UserIcon,
   Timer,
-  Check
+  Check,
+  Download
 } from "lucide-react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,6 +68,7 @@ export default function PlayerProfileView({
   const [showEdit, setShowEdit] = useState(false);
   const [showDel, setShowDel] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showExport, setShowExport] = useState<"ALL" | "MATCH" | "TRAINING" | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const isCoach = loggedIn?.userType === "COACH";
@@ -351,6 +354,50 @@ export default function PlayerProfileView({
         </div>
       </div>
 
+      {/* Export All Sessions */}
+      <div style={{ padding: "0 20px 16px" }}>
+        <button
+          onClick={() => setShowExport("ALL")}
+          disabled={(player.sessions || []).length === 0}
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            padding: "11px 20px",
+            borderRadius: 12,
+            background: "rgba(32,224,112,0.08)",
+            border: "1px solid rgba(32,224,112,0.2)",
+            color: (player.sessions || []).length === 0 ? "var(--txt3)" : "var(--accent)",
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: (player.sessions || []).length === 0 ? "not-allowed" : "pointer",
+            opacity: (player.sessions || []).length === 0 ? 0.5 : 1,
+            transition: "all 0.2s",
+            fontFamily: "var(--font)",
+            letterSpacing: "0.3px",
+          }}
+        >
+          <Download size={14} />
+          Export All Sessions
+          {(player.sessions || []).length > 0 && (
+            <span
+              style={{
+                background: "rgba(32,224,112,0.15)",
+                border: "1px solid rgba(32,224,112,0.25)",
+                borderRadius: 6,
+                padding: "1px 7px",
+                fontSize: 11,
+                fontWeight: 800,
+              }}
+            >
+              {(player.sessions || []).length}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* Match sessions */}
       <div style={{ padding: "0 20px 20px" }}>
         <div className="section-header">
@@ -364,6 +411,30 @@ export default function PlayerProfileView({
           >
             {matchSessions.length}
           </span>
+          <button
+            onClick={() => setShowExport("MATCH")}
+            disabled={matchSessions.length === 0}
+            style={{
+              marginLeft: "auto",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              padding: "5px 12px",
+              borderRadius: 8,
+              background: "rgba(255,215,0,0.1)",
+              border: "1px solid rgba(255,215,0,0.25)",
+              color: matchSessions.length === 0 ? "var(--txt3)" : "var(--gold)",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: matchSessions.length === 0 ? "not-allowed" : "pointer",
+              opacity: matchSessions.length === 0 ? 0.5 : 1,
+              transition: "all 0.2s",
+              fontFamily: "var(--font)",
+            }}
+          >
+            <Download size={12} />
+            Export CSV
+          </button>
         </div>
         {matchSessions.length === 0 ? (
           <p style={{ color: "var(--txt3)", fontSize: 14 }}>
@@ -444,6 +515,30 @@ export default function PlayerProfileView({
           >
             {trainSessions.length}
           </span>
+          <button
+            onClick={() => setShowExport("TRAINING")}
+            disabled={trainSessions.length === 0}
+            style={{
+              marginLeft: "auto",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              padding: "5px 12px",
+              borderRadius: 8,
+              background: "rgba(0,212,255,0.1)",
+              border: "1px solid rgba(0,212,255,0.25)",
+              color: trainSessions.length === 0 ? "var(--txt3)" : "var(--blue)",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: trainSessions.length === 0 ? "not-allowed" : "pointer",
+              opacity: trainSessions.length === 0 ? 0.5 : 1,
+              transition: "all 0.2s",
+              fontFamily: "var(--font)",
+            }}
+          >
+            <Download size={12} />
+            Export CSV
+          </button>
         </div>
         {trainSessions.length === 0 ? (
           <p style={{ color: "var(--txt3)", fontSize: 14 }}>
@@ -548,6 +643,15 @@ export default function PlayerProfileView({
           }}
           playerData={player}
           isEditing
+        />
+      )}
+
+      {showExport && (
+        <ExportCsvModal
+          sessions={player.sessions || []}
+          playerName={player.name}
+          defaultType={showExport === "ALL" ? "ALL" : showExport}
+          onClose={() => setShowExport(null)}
         />
       )}
 

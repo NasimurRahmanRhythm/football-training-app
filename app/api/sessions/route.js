@@ -38,6 +38,7 @@ export async function GET(req) {
     await connectDB();
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type")?.toUpperCase();
+    const full = searchParams.get("full") === "1";
 
     const query = {};
     if (type) {
@@ -50,8 +51,16 @@ export async function GET(req) {
       query.type = type;
     }
 
-    const sessions = await Session.find(query, "date type").sort({ date: -1 });
+    let q = Session.find(query, full ? undefined : "date type").sort({ date: -1 });
 
+    // When ?full=1, populate player names for CSV export
+    if (full) {
+      q = q
+        .populate("players.mongoId", "name")
+        .populate("drills.players.mongoId", "name");
+    }
+
+    const sessions = await q;
     return NextResponse.json(sessions, { status: 200 });
   } catch (error) {
     console.error("GET /api/sessions error:", error);
